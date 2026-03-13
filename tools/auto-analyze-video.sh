@@ -33,8 +33,17 @@ workspaceDir=$(dirname "$SCRIPT_DIR")
 outputDir="$workspaceDir/analysis/$videoName"
 frameDir="$outputDir/frames"
 
+# 获取绝对路径（兼容没有 realpath 的系统）
+if command -v realpath &> /dev/null; then
+    videoPathAbs=$(realpath "$VideoPath" 2>/dev/null || echo "$VideoPath")
+elif command -v readlink &> /dev/null; then
+    videoPathAbs=$(readlink -f "$VideoPath" 2>/dev/null || echo "$VideoPath")
+else
+    videoPathAbs="$VideoPath"
+fi
+
 write_info "🎬 开始分析视频: $videoName"
-write_info "   文件路径: $(realpath "$VideoPath" 2>/dev/null || echo "$VideoPath")"
+write_info "   文件路径: $videoPathAbs"
 
 # 创建输出目录
 mkdir -p "$frameDir"
